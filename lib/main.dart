@@ -1,10 +1,14 @@
-import 'dart:ffi';
-import 'dart:math';
-
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_displaymode/flutter_displaymode.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  Paint.enableDithering = true;
+  if (Platform.isAndroid) {
+    await FlutterDisplayMode.setHighRefreshRate();
+  }
   runApp(const MyApp());
 }
 
@@ -18,64 +22,39 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: kDebugMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+        colorSchemeSeed: Colors.blueAccent,
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  const MyHomePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: Drawer(
-          child: SafeArea(
-              child: ListView(
-        children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
-            child: Text('header'),
-          ),
-          ...(([1,2,3,4,5,6,7,8,9,10,11,12,13].map((element) {
-            return ListTile(
-              title: Text('item - $element'),
-              onTap: () {
-                  Navigator.pop(context);
-              },
-            );
-          })))
-        ],
-      ))),
-      appBar: AppBar(),
-      body: const MyContainer(),
-    );
-  }
-}
-
-class MyContainer extends StatefulWidget {
-  const MyContainer({super.key});
-
-  @override
-  State<MyContainer> createState() {
-    return _MyContainerState();
-  }
-}
-
-class _MyContainerState extends State<MyContainer> {
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child:
-          ElevatedButton(
-              child: const Text('打开菜单'),
-            onPressed: () {
-              Scaffold.of(context).openDrawer();
-            },
-          ),
+      home: DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text('Flutter Demo'),
+              centerTitle: true,
+              bottom: const TabBar(tabs: [
+                Tab(
+                  text: '全部',
+                  icon: Icon(Icons.all_inclusive_rounded),
+                ),
+                Tab(
+                  text: '中国',
+                  icon: Icon(Icons.child_friendly),
+                ),
+                Tab(text: '其他国家', icon: Icon(Icons.mic_external_off))
+              ]),
+            ),
+            body: const TabBarView(children: [
+              Center(
+                child: Icon(Icons.all_inclusive_outlined),
+              ),
+              Center(
+                child: Icon(Icons.child_friendly),
+              ),
+              Center(
+                child: Icon(Icons.mic_external_off),
+              ),
+            ]),
+          )),
     );
   }
 }
